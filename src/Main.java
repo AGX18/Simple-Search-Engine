@@ -1,3 +1,7 @@
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -10,8 +14,17 @@ public class Main {
         EXIT
     }
     public static void main(String[] args) {
+        ArrayList<String> lines;
+        if (args.length == 2 && args[0].equals("--data")) {
+            String fileName = args[1];
+            lines = readLinesFromFile(fileName);
+
+        } else {
+            System.out.println("Usage: java Main --data <filename>");
+            return;
+        }
+
         Scanner scanner = new Scanner(System.in);
-        ArrayList<String> lines = inputData(scanner);
 
 
         while (true) {
@@ -40,6 +53,24 @@ public class Main {
         }
 
     }
+
+    private static ArrayList<String> readLinesFromFile(String fileName) {
+        ArrayList<String> lines = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                // Exclude any processing related to counting lines or totals
+                lines.add(line);
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading the file: " + e.getMessage());
+        }
+
+        return lines;
+    }
+
+
 
     public static void printALl(ArrayList<String> lines) {
         System.out.println("=== List of people ===");
@@ -77,35 +108,36 @@ public class Main {
 
     }
 
-//    public static void query(Scanner scanner, ArrayList<String> lines) {
-//
-//        System.out.println("Enter the number of search queries:");
-//        int qNum = 0;
-//        while (true) {
-//            try {
-//                qNum = Integer.parseInt(scanner.nextLine());
-//                break; // Exit the loop if a valid integer is entered
-//            } catch (NumberFormatException e) {
-//                System.out.println("Invalid input for the number of search queries. Please enter an integer.");
-//            }
-//        }
-//
-//        while (qNum > 0) {
-//            System.out.println();
-//            System.out.println("Enter data to search people:");
-//            String word = scanner.nextLine();
-//            ArrayList<String> info = search(lines, word);
-//            if (info.isEmpty()) {
-//                System.out.println("No matching people found.\n");
-//            } else {
-//                System.out.println("Found people:");
-//                for (String details : info) {
-//                    System.out.println(details);
-//                }
-//            }
-//            qNum--;
-//        }
-//    }
+    @Deprecated
+    public static void query(Scanner scanner, ArrayList<String> lines) {
+
+        System.out.println("Enter the number of search queries:");
+        int qNum;
+        while (true) {
+            try {
+                qNum = Integer.parseInt(scanner.nextLine());
+                break; // Exit the loop if a valid integer is entered
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input for the number of search queries. Please enter an integer.");
+            }
+        }
+
+        while (qNum > 0) {
+            System.out.println();
+            System.out.println("Enter data to search people:");
+            String word = scanner.nextLine();
+            ArrayList<String> info = search(lines, word);
+            if (info.isEmpty()) {
+                System.out.println("No matching people found.\n");
+            } else {
+                System.out.println("Found people:");
+                for (String details : info) {
+                    System.out.println(details);
+                }
+            }
+            qNum--;
+        }
+    }
 
     public static void search(Scanner scanner, ArrayList<String> lines) {
             System.out.println("Enter a name or email to search all suitable people.");
@@ -138,6 +170,7 @@ public class Main {
         return foundInfo;
     }
 
+    @SuppressWarnings(value = "Warning:(173, 37) Method 'inputData(java.util.Scanner)' is never used")
     public static ArrayList<String> inputData(Scanner scanner) {
         System.out.println("Enter the number of people:");
         int noOfData = Integer.parseInt(scanner.nextLine());
