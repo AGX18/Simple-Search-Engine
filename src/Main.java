@@ -170,7 +170,7 @@ public class Main {
         return foundInfo;
     }
 
-    @SuppressWarnings(value = "Warning:(173, 37) Method 'inputData(java.util.Scanner)' is never used")
+    @SuppressWarnings(value = "unused")
     public static ArrayList<String> inputData(Scanner scanner) {
         System.out.println("Enter the number of people:");
         int noOfData = Integer.parseInt(scanner.nextLine());
