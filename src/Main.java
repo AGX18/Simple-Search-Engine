@@ -1,10 +1,7 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 
 public class Main {
@@ -14,6 +11,8 @@ public class Main {
         INVALID,
         EXIT
     }
+
+
     public static void main(String[] args) {
         ArrayList<String> lines;
         if (args.length == 2 && args[0].equals("--data")) {
@@ -57,27 +56,71 @@ public class Main {
     }
 
     private static void search(Scanner scanner, InvertedIndex index, ArrayList<String> lines) {
-        System.out.println("Enter a name or email to search all suitable people.");
+        System.out.println("Select a matching strategy: ALL, ANY, NONE");
         scanner.nextLine();
+        String strategy = scanner.nextLine();
+        System.out.println("Enter a name or email to search all suitable people.");
         String word = scanner.nextLine();
-        List<Integer> linesIndexes =  index.get(word.toLowerCase());
-        printResult(lines, linesIndexes);
+        SearchManager searchManager = new SearchManager();
+        Set<String> foundLines;
+        switch (strategy) {
+            case "ALL" -> {
+                searchManager.setStrategy(new SearchAllStrategy());
+                foundLines = searchManager.search(word, index, lines);
+            }
+            case "ANY" -> {
+                searchManager.setStrategy(new SearchAnyStrategy());
+                foundLines = searchManager.search(word, index, lines);
+            }
+            case "NONE" -> {
+                searchManager.setStrategy(new SearchNoneStrategy());
+                foundLines =  searchManager.search(word, index, lines);
+            }
+
+            default -> {
+                System.out.println("Invalid strategy");
+                return;
+            }
+        }
+        printResult(foundLines);
 
     }
 
-    private static void printResult(ArrayList<String> lines, List<Integer> linesIndexes) {
-        if(linesIndexes.isEmpty()) {
+//    private static void search(Scanner scanner, InvertedIndex index, ArrayList<String> lines) {
+//        System.out.println("Enter a name or email to search all suitable people.");
+//        scanner.nextLine();
+//        String word = scanner.nextLine();
+//        List<Integer> linesIndexes =  index.get(word.toLowerCase());
+//        printResult(lines, linesIndexes);
+//
+//    }
+
+    private static void printResult(Set<String> lines) {
+        System.out.println();
+        if(lines.isEmpty()) {
             System.out.println("No matching people found.");
         }
         else {
-            System.out.println( linesIndexes.size() + " persons found:");
-            for (Integer lineIndex : linesIndexes) {
-                System.out.println(lines.get(lineIndex));
+            System.out.println( lines.size() + " persons found:");
+            for (String line : lines) {
+                System.out.println(line);
             }
         }
         System.out.println();
     }
 
+//    private static void printResult(ArrayList<String> lines, List<Integer> linesIndexes) {
+//        if(linesIndexes.isEmpty()) {
+//            System.out.println("No matching people found.");
+//        }
+//        else {
+//            System.out.println( lines.size() + " persons found:");
+//            for (String line : lines) {
+//                System.out.println(line);
+//            }
+//        }
+//        System.out.println();
+//    }
 
 
 
