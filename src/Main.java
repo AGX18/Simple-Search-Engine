@@ -1,13 +1,14 @@
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Scanner;
 
 
 public class Main {
-    enum Choices {
+    public enum Choices {
         SEARCH,
         PRINT_ALL,
         INVALID,
@@ -26,6 +27,7 @@ public class Main {
 
         Scanner scanner = new Scanner(System.in);
 
+        InvertedIndex index = indexing(lines);
 
         while (true) {
             Choices choice = choose(scanner);
@@ -37,7 +39,7 @@ public class Main {
                 }
 
                 case SEARCH -> {
-                    search(scanner, lines);
+                    search(scanner, index ,lines);
                 }
 
                 case PRINT_ALL -> {
@@ -54,6 +56,32 @@ public class Main {
 
     }
 
+    private static void search(Scanner scanner, InvertedIndex index, ArrayList<String> lines) {
+        System.out.println("Enter a name or email to search all suitable people.");
+        scanner.nextLine();
+        String word = scanner.nextLine();
+        List<Integer> linesIndexes =  index.get(word.toLowerCase());
+        printResult(lines, linesIndexes);
+
+    }
+
+    private static void printResult(ArrayList<String> lines, List<Integer> linesIndexes) {
+        if(linesIndexes.isEmpty()) {
+            System.out.println("No matching people found.");
+        }
+        else {
+            System.out.println( linesIndexes.size() + " persons found:");
+            for (Integer lineIndex : linesIndexes) {
+                System.out.println(lines.get(lineIndex));
+            }
+        }
+        System.out.println();
+    }
+
+
+
+
+
     private static ArrayList<String> readLinesFromFile(String fileName) {
         ArrayList<String> lines = new ArrayList<>();
 
@@ -68,6 +96,28 @@ public class Main {
         }
 
         return lines;
+    }
+
+    private static ArrayList<String> getWords(String line) {
+        ArrayList<String> words = new ArrayList<>();
+        String[] lineWords = line.split(" ");
+        Collections.addAll(words, lineWords);
+
+        return words;
+    }
+
+    private static InvertedIndex indexing(ArrayList<String> lines) {
+        InvertedIndex index = new InvertedIndex();
+
+        Integer i = 0;
+        for (var line : lines) {
+            ArrayList<String> words =  getWords(line);
+            for (String word : words) {
+                index.add(word.toLowerCase(), i);
+            }
+            i++;
+        }
+        return index;
     }
 
 
@@ -87,9 +137,10 @@ public class Main {
                 === Menu ===
                 1. Find a person
                 2. Print all people
-                0. Exit """);
+                0. Exit""");
 
         int choice = scanner.nextInt();
+
         switch (choice) {
             case 0 -> {
                 return Choices.EXIT;
@@ -139,6 +190,7 @@ public class Main {
         }
     }
 
+    @Deprecated
     public static void search(Scanner scanner, ArrayList<String> lines) {
             System.out.println("Enter a name or email to search all suitable people.");
             scanner.nextLine();
@@ -155,6 +207,7 @@ public class Main {
     }
 
 
+    @Deprecated
     public static ArrayList<String> search(ArrayList<String> lines, String word) {
 
         ArrayList<String> foundInfo = new ArrayList<>();
